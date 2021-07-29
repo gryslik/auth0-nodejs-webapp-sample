@@ -8,7 +8,9 @@
 module.exports = function () {
   return function secured (req, res, next) {
     if (req.user) { return next(); }
-    req.session.returnTo = req.originalUrl;
-    res.redirect('/login');
+    req.session.returnTo = req.originalUrl.substring(1); //get rid of first / to make user instead of /user for proper redirect under proxy
+    console.log('secured_returnTo:',req.session.returnTo);
+    //req.session.returnTo = req.originalUrl;
+    res.redirect('login');
   };
 };

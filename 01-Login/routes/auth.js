@@ -28,12 +28,13 @@ router.get('/callback', function (req, res, next) {
       if (err) { return next(err); }
       const returnTo = req.session.returnTo;
       delete req.session.returnTo;
-      res.redirect(returnTo || '/user');
+      res.redirect(returnTo || 'user');
     });
   })(req, res, next);
 });
 
 // Perform session logout and redirect to homepage
+/*
 router.get('/logout', (req, res) => {
   req.logout();
 
@@ -43,6 +44,8 @@ router.get('/logout', (req, res) => {
     returnTo += ':' + port;
   }
 
+ console.log('returnTo', returnTo);
+
   var logoutURL = new url.URL(
     util.format('https://%s/v2/logout', process.env.AUTH0_DOMAIN)
   );
@@ -50,9 +53,32 @@ router.get('/logout', (req, res) => {
     client_id: process.env.AUTH0_CLIENT_ID,
     returnTo: returnTo
   });
+  //console.log('logouturl', logoutURL);
+  //console.log('searchString', searchString);
   logoutURL.search = searchString;
 
+  logoutURL = 'https://ai.actempire.com/crypto';
+  console.log("logging out to: ", logoutURL);
   res.redirect(logoutURL);
 });
+*/
+
+router.get('/logout', function(req, res){
+ //console.log(process.env);
+
+  var logoutUrl = process.env.LOGOUT_URL;
+
+  if (process.env.LOGOUT_AUTH0 === 'true') {
+    logoutUrl = 'https://' + process.env.AUTH0_DOMAIN + '/v2/logout?returnTo=' 
+      + process.env.LOGOUT_URL + '&client_id=' + process.env.AUTH0_CLIENT_ID
+      + (process.env.LOGOUT_FEDERATED === 'true'? '&federated' : '');
+  }
+  
+  req.logout();
+  console.log('logging out of: ',logoutUrl) 
+  res.redirect(logoutUrl);
+});
+
+
 
 module.exports = router;
